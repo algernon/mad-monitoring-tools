@@ -1,6 +1,7 @@
-(import [riemann-client.client])
+(import [riemann-client.client]
+        [mad-monitoring-tools.writer.interface [MMTWriter]])
 
-(defclass RiemannWriter [object]
+(defclass RiemannWriter [MMTWriter]
   (defn --init-- [self]
     (setv self.--writer-- (.Client riemann-client.client))
     (.connect self.--writer--.transport)

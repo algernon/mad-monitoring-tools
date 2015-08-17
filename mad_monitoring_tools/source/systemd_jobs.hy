@@ -1,8 +1,10 @@
 (import [dbus]
-        [dbus.mainloop.glib])
+        [dbus.mainloop.glib]
+        [mad-monitoring-tools.source.interface [MMTSource]])
 
-(defclass SystemdJobSource [object]
+(defclass SystemdJobSource [MMTSource]
   "A DBus source, that monitors systemd jobs."
+
   (defn --init-- [self &optional on-new on-removed]
     "Sets up a new subscriber to systemd job events. `on-new` and
   `on-removed` get called when a new job gets added or removed,
@@ -18,8 +20,16 @@
     (.Subscribe self.--iface--)
     (when on-new
       (.connect-to-signal self.--iface--
-                          "JobNew" on-new))
+                          "JobNew" (.make-callback self on-new)))
     (when on-removed
       (.connect-to-signal self.--iface--
-                          "JobRemoved" on-removed))
-    nil))
+                          "JobRemoved" (.make-callback self on-removed)))
+    nil)
+
+  (defn to-event [self job-id job unit &rest args]
+    (setv event (.to-event (super SystemdJobSource self)))
+    (.update event {:service (+ "systemd/" unit)
+                    :metric 1
+                    :state nil
+                    :description nil})
+    event))

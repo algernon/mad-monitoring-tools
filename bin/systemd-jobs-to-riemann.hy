@@ -1,26 +1,10 @@
 #! /usr/bin/env hy
-(import [dbus.mainloop.glib]
-        [gobject]
-        [mad-monitoring-tools.source.systemd-jobs [SystemdJobSource]]
-        [mad-monitoring-tools.writer.riemann [RiemannWriter]])
+(import [mad-monitoring-tools.source.systemd-jobs [SystemdJobSource]]
+        [mad-monitoring-tools.writer.riemann [RiemannWriter]]
+        [mad-monitoring-tools.core [*]])
+(require mad-monitoring-tools.macros)
 
-(.DBusGMainLoop dbus.mainloop.glib :set-as-default true)
+(mmt/connect-> SystemdJobSource [:on-new]
+               RiemannWriter)
 
-(defn sd-job-to-event [jid job unit]
-  {:host "localhost"
-   :metric 1
-   :service (+ "systemd/" unit)
-   :description nil
-   :state nil})
-
-(defn sd-job-to-riemann [writer jid job unit]
-  (.write writer (sd-job-to-event jid job unit)))
-
-(defn create-cb [writer]
-  (fn [jid job unit]
-    (sd-job-to-riemann writer jid job unit)))
-
-(def writer (RiemannWriter))
-(def source (SystemdJobSource :on-new (create-cb writer)))
-
-(.run (.MainLoop gobject))
+(mmt-run)
