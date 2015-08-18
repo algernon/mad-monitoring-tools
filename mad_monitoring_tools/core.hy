@@ -6,7 +6,7 @@
 
 (.DBusGMainLoop dbus.mainloop.glib :set-as-default true)
 
-(defn mmt-run []
+(defn mmt/run! []
   (.run (.MainLoop gobject)))
 
 (defmacro mmt/connect-> [source signals writer]

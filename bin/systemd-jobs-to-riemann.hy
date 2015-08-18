@@ -5,4 +5,4 @@
 (mmt/connect-> SystemdJobSource [:on-new]
                RiemannWriter)
 
-(mmt-run)
+(mmt/run!)
