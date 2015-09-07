@@ -2,7 +2,8 @@
         [gobject]
 
         [mad-monitoring-tools.source.systemd-jobs [SystemdJobSource]]
-        [mad-monitoring-tools.writer.riemann [RiemannWriter]])
+        [mad-monitoring-tools.writer.riemann [RiemannWriter]]
+        [mad-monitoring-tools.writer.stdout [StdOutWriter]])
 
 (.DBusGMainLoop dbus.mainloop.glib :set-as-default true)
 
